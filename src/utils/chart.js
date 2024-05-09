@@ -1,5 +1,11 @@
 import i18n from "@dhis2/d2-i18n";
-import { getRelativeHumidity } from "./calc";
+import {
+  toCelcius,
+  kelvinToCelsius,
+  metersToMillimeters,
+  getRelativeHumidity,
+  roundOneDecimal,
+} from "./calc";
 
 export const animation = {
   duration: 300,
@@ -7,7 +13,16 @@ export const animation = {
 
 export const credits = {
   href: "https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land",
-  text: i18n.t("ERA5-Land / Copernicus Climate Change Service"),
+  text: i18n.t(
+    "ERA5-Land / Copernicus Climate Change Service / Google Earth Engine"
+  ),
+};
+
+export const heatCredits = {
+  href: "https://cds.climate.copernicus.eu/cdsapp#!/dataset/derived-utci-historical",
+  text: i18n.t(
+    "ERA5-HEAT / Copernicus Climate Change Service / Google Earth Engine"
+  ),
 };
 
 // Date fromat YYYY-MM
@@ -29,12 +44,6 @@ const referencePeriodYearCount = ([startYear, endYear]) =>
 
 const periodBandReducer = (band) => (v, d) => v + d[band];
 
-const roundOneDecimal = (v) => Math.round(v * 10) / 10;
-
-const kelvinToCelsius = (k) => k - 273.15;
-
-const metersToMillimeters = (m) => roundOneDecimal(m * 1000);
-
 const referencePeriodYearRange = (referencePeriod) =>
   referencePeriod.split("-").map(Number);
 
@@ -49,7 +58,7 @@ export const getTemperatureMonthNormal = (data, month, referencePeriod) => {
     monthData.filter(periodFilter).reduce(periodReducer, 0) /
     referenceYearCount;
 
-  return roundOneDecimal(kelvinToCelsius(normal));
+  return toCelcius(normal);
 };
 
 export const getPrecipitationMonthNormal = (data, month, referencePeriod) => {
@@ -100,4 +109,13 @@ export const getDailyPeriod = (data) => {
   const firstYear = data[0].id.substring(0, 4);
   const lastYear = data[data.length - 1].id.substring(0, 4);
   return getYearPeriod(firstYear, lastYear);
+};
+
+export const strokePattern = {
+  pattern: {
+    color: "rgba(0,0,0,.2)",
+    path: "M -5 15 L 15 -5M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2",
+    width: 4,
+    height: 4,
+  },
 };
