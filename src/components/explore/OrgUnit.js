@@ -11,6 +11,7 @@ import ForecastTab from "./forecast/ForecastTab";
 import TemperatureTab from "./TemperatureTab";
 import PrecipitationTab from "./PrecipitationTab";
 import HumidityTab from "./HumidityTab";
+import HeatTab from "./HeatTab";
 import ClimateChangeTab from "./ClimateChangeTab";
 import useEarthEngineTimeSeries from "../../hooks/useEarthEngineTimeSeries";
 import { defaultPeriod, defaultReferencePeriod } from "../../utils/time";
@@ -24,18 +25,16 @@ const band = [
   "total_precipitation_sum",
 ];
 
-const reducer = ["mean", "min", "max", "mean", "mean"];
-
 const monthlyDataset = {
   datasetId: "ECMWF/ERA5_LAND/MONTHLY_AGGR",
   band,
-  reducer,
+  reducer: "mean",
 };
 
 const dailyDataset = {
   datasetId: "ECMWF/ERA5_LAND/DAILY_AGGR",
   band,
-  reducer,
+  reducer: ["mean", "min", "max", "mean", "mean"],
 };
 
 const allMonthsPeriod = {
@@ -48,6 +47,7 @@ const tabs = {
   temperature: TemperatureTab,
   precipitation: PrecipitationTab,
   humidity: HumidityTab,
+  heat: HeatTab,
   climatechange: ClimateChangeTab,
 };
 
@@ -109,6 +109,7 @@ const OrgUnit = ({ orgUnit }) => {
               monthlyData={monthlyData}
               dailyData={dailyData}
               monthlyPeriod={monthlyPeriod}
+              dailyPeriod={dailyPeriod}
               referencePeriod={referencePeriod}
             />
             {hasMonthlyAndDailyData && (
@@ -130,7 +131,9 @@ const OrgUnit = ({ orgUnit }) => {
             )}
             {dataIsLoaded &&
               (tab === "climatechange" ||
-                (periodType === "monthly" && tab !== "forecast10days")) && (
+                (periodType === "monthly" &&
+                  tab !== "forecast10days" &&
+                  tab !== "heat")) && (
                 <ReferencePeriodSelect
                   selected={referencePeriod}
                   onChange={setReferencePeriod}
